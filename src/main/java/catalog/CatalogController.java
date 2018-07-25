@@ -10,11 +10,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import catalog.models.*;
+import org.springframework.beans.factory.annotation.Autowired;
+
 /**
  * REST Controller to manage Inventory database
  */
 @RestController
 public class CatalogController {
+	@Autowired
+	InventoryRepo itemsRepo;
 
     Logger logger = LoggerFactory.getLogger(CatalogController.class);
 
@@ -25,6 +30,14 @@ public class CatalogController {
     @ResponseBody
     ResponseEntity<?> getInventory() {
         return ResponseEntity.ok("[{\"id\": 1,\"name\":\"one\"},{\"id\":2,\"name\":\"two\"}]");
+        
+        @RequestMapping(value = "/items", method =
+RequestMethod.GET)
+@ResponseBody
+Iterable<Inventory> getInventory() {
+return itemsRepo.findAll();
+}
+        
     }
 
     /**
@@ -33,6 +46,15 @@ public class CatalogController {
     @RequestMapping(value = "/items/{id}", method = RequestMethod.GET)
     ResponseEntity<?> getById(@PathVariable long id) {
                 return ResponseEntity.ok("{\"id\":1,\"name\":\"one\"}");
+     @RequestMapping(value = "/items/{id}", method =
+RequestMethod.GET)
+ResponseEntity<?> getById(@PathVariable long id) {
+if (!itemsRepo.exists(id)) {
+return ResponseEntity.notFound().build();
+}
+return
+ResponseEntity.ok(itemsRepo.findOne(id));
+}
     }
 
 }
